@@ -1,0 +1,33 @@
+<div class="add-payment-form">
+    <h2>Add New Payment</h2>
+    <form [formGroup]="addPaymentForm" (ngSubmit)="onSubmit()">
+      <mat-form-field>
+        <mat-label>First Name</mat-label>
+        <input matInput formControlName="payee_first_name" />
+        <mat-error *ngIf="addPaymentForm.get('payee_first_name')?.invalid">First name is required.</mat-error>
+      </mat-form-field>
+  
+      <mat-form-field>
+        <mat-label>Last Name</mat-label>
+        <input matInput formControlName="payee_last_name" />
+        <mat-error *ngIf="addPaymentForm.get('payee_last_name')?.invalid">Last name is required.</mat-error>
+      </mat-form-field>
+  
+      <!-- Repeat similar for other fields -->
+  
+      <mat-form-field>
+        <mat-label>Currency</mat-label>
+        <input matInput formControlName="currency" />
+        <mat-error *ngIf="addPaymentForm.get('currency')?.invalid">Enter a valid 3-letter currency code.</mat-error>
+      </mat-form-field>
+  
+      <mat-form-field>
+        <mat-label>Due Amount</mat-label>
+        <input matInput type="number" formControlName="due_amount" />
+        <mat-error *ngIf="addPaymentForm.get('due_amount')?.invalid">Enter a valid amount.</mat-error>
+      </mat-form-field>
+  
+      <button mat-raised-button color="primary" type="submit" [disabled]="addPaymentForm.invalid">Add Payment</button>
+    </form>
+  </div>
+  
