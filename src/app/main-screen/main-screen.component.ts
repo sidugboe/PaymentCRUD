@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { PaymentService } from '../payment.service';
 import { Payment } from '../payment.model';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-main-screen',
@@ -17,7 +18,10 @@ export class MainScreenComponent implements OnInit {
   paymentStatus: string = 'all';  // Can be 'due_now', 'overdue', or 'completed'
   displayedColumns: string[] = ['payee_first_name', 'payee_last_name', 'total_due', 'payee_payment_status', 'actions'];
 
-  constructor(private paymentService: PaymentService) {}
+  constructor(
+    private paymentService: PaymentService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     this.loadPayments();

@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PaymentService } from '../payment.service';
+import { Observable } from 'rxjs';
+import { startWith, map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-edit-payment',
@@ -12,6 +14,10 @@ import { PaymentService } from '../payment.service';
 export class EditPaymentComponent implements OnInit {
   editPaymentForm: FormGroup;
   paymentId: string = '';
+  filteredAddresses: string[] = [];
+  filteredCurrencies: string[] = [];
+  allAddresses: string[] = ['123 Main St', '456 Elm St', '789 Oak St']; // Example addresses
+  allCurrencies: string[] = ['USD', 'EUR', 'GBP']; // Example currencies
 
   constructor(
     private fb: FormBuilder,
@@ -22,17 +28,34 @@ export class EditPaymentComponent implements OnInit {
     this.editPaymentForm = this.fb.group({
       payee_due_date: ['', Validators.required],
       due_amount: [0, [Validators.required, Validators.min(0)]],
-      payee_payment_status: ['', Validators.required]
+      payee_payment_status: ['', Validators.required],
+      payee_address_line_1: ['', Validators.required],
+      currency: ['', Validators.required]
     });
   }
 
   ngOnInit(): void {
     this.paymentId = this.route.snapshot.paramMap.get('id') || '';
     this.loadPaymentData();
+
+    // Address autocomplete
+    this.editPaymentForm.get('payee_address_line_1')?.valueChanges.pipe(
+      startWith(''),
+      map(value => this._filterAddresses(value))
+    ).subscribe(filteredAddresses => {
+      this.filteredAddresses = filteredAddresses;
+    });
+
+    // Currency autocomplete
+    this.editPaymentForm.get('currency')?.valueChanges.pipe(
+      startWith(''),
+      map(value => this._filterCurrencies(value))
+    ).subscribe(filteredCurrencies => {
+      this.filteredCurrencies = filteredCurrencies;
+    });
   }
 
   loadPaymentData(): void {
-    // Fetch payment details by ID and populate the form
     this.paymentService.getPaymentById(this.paymentId).subscribe((payment: any) => {
       if (payment) {
         this.editPaymentForm.patchValue(payment);
@@ -41,8 +64,19 @@ export class EditPaymentComponent implements OnInit {
         this.router.navigate(['/main-screen']);
       }
     });
-  }  
+  }
 
+  // Filtering logic for addresses
+  private _filterAddresses(value: string): string[] {
+    const filterValue = value.toLowerCase();
+    return this.allAddresses.filter(address => address.toLowerCase().includes(filterValue));
+  }
+
+  // Filtering logic for currencies
+  private _filterCurrencies(value: string): string[] {
+    const filterValue = value.toLowerCase();
+    return this.allCurrencies.filter(currency => currency.toLowerCase().includes(filterValue));
+  }
 
   onSubmit(): void {
     if (this.editPaymentForm.valid) {

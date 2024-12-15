@@ -38,6 +38,8 @@
         <button mat-button (click)="onDelete(payment._id)">Delete</button>
         <button mat-button *ngIf="payment.payee_payment_status === 'completed'" (click)="onUploadEvidence(payment._id, fileInput?.files?.[0])">Upload Evidence</button>
         <input #fileInput type="file" style="display: none;" />
+        <!-- Edit Button -->
+        <button mat-button [routerLink]="['/edit-payment', payment._id]">Edit</button>
       </td>
     </ng-container>
 
@@ -48,5 +50,4 @@
   <!-- Pagination controls -->
   <mat-paginator [length]="totalPayments" [pageSize]="pageSize" (page)="onPageChange($event.pageIndex + 1)">
   </mat-paginator>
-  
 </div>

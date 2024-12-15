@@ -3,7 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
-
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { MainScreenComponent } from './main-screen/main-screen.component';
@@ -39,6 +39,7 @@ import { MatGridListModule } from '@angular/material/grid-list'; // For grid lay
     FormsModule,
     ReactiveFormsModule,
     HttpClientModule,
+    MatAutocompleteModule,
 
     // Angular Material modules
     MatInputModule,
