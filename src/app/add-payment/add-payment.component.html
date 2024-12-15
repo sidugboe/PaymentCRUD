@@ -1,33 +1,95 @@
 <div class="add-payment-form">
-    <h2>Add New Payment</h2>
-    <form [formGroup]="addPaymentForm" (ngSubmit)="onSubmit()">
-      <mat-form-field>
-        <mat-label>First Name</mat-label>
-        <input matInput formControlName="payee_first_name" />
-        <mat-error *ngIf="addPaymentForm.get('payee_first_name')?.invalid">First name is required.</mat-error>
-      </mat-form-field>
-  
-      <mat-form-field>
-        <mat-label>Last Name</mat-label>
-        <input matInput formControlName="payee_last_name" />
-        <mat-error *ngIf="addPaymentForm.get('payee_last_name')?.invalid">Last name is required.</mat-error>
-      </mat-form-field>
-  
-      <!-- Repeat similar for other fields -->
-  
-      <mat-form-field>
-        <mat-label>Currency</mat-label>
-        <input matInput formControlName="currency" />
-        <mat-error *ngIf="addPaymentForm.get('currency')?.invalid">Enter a valid 3-letter currency code.</mat-error>
-      </mat-form-field>
-  
-      <mat-form-field>
-        <mat-label>Due Amount</mat-label>
-        <input matInput type="number" formControlName="due_amount" />
-        <mat-error *ngIf="addPaymentForm.get('due_amount')?.invalid">Enter a valid amount.</mat-error>
-      </mat-form-field>
-  
-      <button mat-raised-button color="primary" type="submit" [disabled]="addPaymentForm.invalid">Add Payment</button>
-    </form>
-  </div>
-  
+  <h2>Add New Payment</h2>
+  <form [formGroup]="addPaymentForm" (ngSubmit)="onSubmit()">
+    <mat-form-field>
+      <mat-label>First Name</mat-label>
+      <input matInput formControlName="payee_first_name" />
+      <mat-error *ngIf="addPaymentForm.get('payee_first_name')?.invalid">First name is required.</mat-error>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Last Name</mat-label>
+      <input matInput formControlName="payee_last_name" />
+      <mat-error *ngIf="addPaymentForm.get('payee_last_name')?.invalid">Last name is required.</mat-error>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Email</mat-label>
+      <input matInput formControlName="payee_email" />
+      <mat-error *ngIf="addPaymentForm.get('payee_email')?.invalid">Enter a valid email.</mat-error>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Phone Number</mat-label>
+      <input matInput formControlName="payee_phone_number" />
+      <mat-error *ngIf="addPaymentForm.get('payee_phone_number')?.invalid">Enter a valid phone number.</mat-error>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Address Line 1</mat-label>
+      <input matInput formControlName="payee_address_line_1" />
+      <mat-error *ngIf="addPaymentForm.get('payee_address_line_1')?.invalid">Address is required.</mat-error>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>City</mat-label>
+      <input matInput formControlName="payee_city" />
+      <mat-error *ngIf="addPaymentForm.get('payee_city')?.invalid">City is required.</mat-error>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Country</mat-label>
+      <input matInput formControlName="payee_country" />
+      <mat-error *ngIf="addPaymentForm.get('payee_country')?.invalid">Country is required.</mat-error>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Postal Code</mat-label>
+      <input matInput formControlName="payee_postal_code" />
+      <mat-error *ngIf="addPaymentForm.get('payee_postal_code')?.invalid">Postal code is required.</mat-error>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Currency</mat-label>
+      <input matInput formControlName="currency" />
+      <mat-error *ngIf="addPaymentForm.get('currency')?.invalid">Enter a valid 3-letter currency code.</mat-error>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Due Amount</mat-label>
+      <input matInput type="number" formControlName="due_amount" />
+      <mat-error *ngIf="addPaymentForm.get('due_amount')?.invalid">Enter a valid amount.</mat-error>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Due Date</mat-label>
+      <input matInput formControlName="payee_due_date" type="date" />
+      <mat-error *ngIf="addPaymentForm.get('payee_due_date')?.invalid">Due date is required.</mat-error>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Payment Status</mat-label>
+      <mat-select formControlName="payee_payment_status">
+        <mat-option value="pending">Pending</mat-option>
+        <mat-option value="completed">Completed</mat-option>
+        <mat-option value="overdue">Overdue</mat-option>
+        <mat-option value="due_now">Due Now</mat-option>
+      </mat-select>
+      <mat-error *ngIf="addPaymentForm.get('payee_payment_status')?.invalid">Status is required.</mat-error>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Discount Percentage</mat-label>
+      <input matInput type="number" formControlName="discount_percent" />
+      <mat-error *ngIf="addPaymentForm.get('discount_percent')?.invalid">Enter a valid discount percentage.</mat-error>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Tax Percentage</mat-label>
+      <input matInput type="number" formControlName="tax_percent" />
+      <mat-error *ngIf="addPaymentForm.get('tax_percent')?.invalid">Enter a valid tax percentage.</mat-error>
+    </mat-form-field>
+
+    <button mat-raised-button color="primary" type="submit" [disabled]="addPaymentForm.invalid">Add Payment</button>
+  </form>
+</div>
