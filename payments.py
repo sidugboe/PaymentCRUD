@@ -11,8 +11,20 @@ from io import BytesIO
 from bson import ObjectId
 import uuid
 from gridfs import GridFS
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
+
+origins = ["*"]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 # MongoDB URI and connection
 uri = "mongodb+srv://SIdugboe:456R7xzk!@cluster0.mxdnt.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
@@ -20,6 +32,11 @@ mongo_client = MongoClient(uri, tlsAllowInvalidCertificates=True)
 db = mongo_client["payment_database"]
 payments_collection = db["payments"]
 fs = GridFS(db)  # To store files
+
+# Helper function to convert ObjectId to string
+def serialize_payment(payment):
+    payment["_id"] = str(payment["_id"])
+    return payment
 
 # Load and normalize the CSV data
 def normalize_csv():
@@ -121,10 +138,11 @@ async def get_payments(
 
     skip = (page - 1) * size
     payments = list(payments_collection.find(query).skip(skip).limit(size))
-    
+    # print(payments)
     # Adjust payment status based on due date
     today = datetime.utcnow().date()
     for payment in payments:
+        # print(payment, type(payment), payment["_id"], type(payment["_id"]))
         due_date = datetime.strptime(payment['payee_due_date'], '%Y-%m-%d').date()
         if due_date < today and payment['payee_payment_status'] != 'completed':
             payment['payee_payment_status'] = 'overdue'
@@ -135,6 +153,9 @@ async def get_payments(
         payment['total_due'] = (
             payment['due_amount'] - (payment['due_amount'] * payment['discount_percent'] / 100)
         ) + (payment['due_amount'] * payment['tax_percent'] / 100)
+
+        # Serialize ObjectId fields
+        payments = [serialize_payment(payment) for payment in payments]
 
     return {"payments": payments}
 
@@ -183,4 +204,4 @@ async def download_evidence(file_id: str):
     return FileResponse(file, media_type="application/octet-stream", headers={"Content-Disposition": "attachment; filename= evidence.pdf"})
 
 # Initialize the app by normalizing and inserting CSV data
-normalize_csv()
+# normalize_csv()

@@ -17,6 +17,11 @@
       <td mat-cell *matCellDef="let payment"> {{payment.payee_first_name}} </td>
     </ng-container>
 
+    <ng-container matColumnDef="payee_last_name">
+      <th mat-header-cell *matHeaderCellDef> Last Name </th>
+      <td mat-cell *matCellDef="let payment"> {{payment.payee_last_name}} </td>
+    </ng-container>
+
     <ng-container matColumnDef="total_due">
       <th mat-header-cell *matHeaderCellDef> Total Due </th>
       <td mat-cell *matCellDef="let payment"> {{payment.total_due | currency}} </td>

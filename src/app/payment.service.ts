@@ -14,9 +14,10 @@ export class PaymentService {
   // Get a list of payments with filtering, pagination, and sorting
   getPayments(paymentStatus?: string, page: number = 1, size: number = 10): Observable<any> {
     let url = `${this.apiUrl}/get_payments?page=${page}&size=${size}`;
-    if (paymentStatus) {
-      url += `&payment_status=${paymentStatus}`;
-    }
+    // if (paymentStatus) {
+    //   url += `&payment_status=${paymentStatus}`;
+    // }
+    console.log('Constructed URL:', url);
     return this.http.get<any>(url);
   }
 

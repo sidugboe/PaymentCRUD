@@ -24,6 +24,7 @@ export class MainScreenComponent implements OnInit {
 
   loadPayments(): void {
     this.paymentService.getPayments(this.paymentStatus, this.currentPage, this.pageSize).subscribe((response: any) => {
+      console.log('API Response:', response); 
       this.payments = response.payments;
       this.totalPayments = response.totalCount;  // Assuming backend returns total count for pagination
     });
