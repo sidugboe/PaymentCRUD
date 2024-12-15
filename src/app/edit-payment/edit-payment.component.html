@@ -50,6 +50,13 @@
       <mat-error *ngIf="editPaymentForm.get('payee_payment_status')?.invalid">Status is required.</mat-error>
     </mat-form-field>
 
+    <!-- Evidence Upload Field -->
+    <mat-form-field *ngIf="editPaymentForm.get('payee_payment_status')?.value === 'completed'">
+      <mat-label>Upload Evidence</mat-label>
+      <input matInput type="file" formControlName="evidence_file" (change)="onFileChange($event)" />
+      <mat-error *ngIf="editPaymentForm.get('evidence_file')?.invalid">Evidence file is required.</mat-error>
+    </mat-form-field>
+
     <!-- Submit Button -->
     <button mat-raised-button color="primary" type="submit" [disabled]="editPaymentForm.invalid">Update Payment</button>
   </form>

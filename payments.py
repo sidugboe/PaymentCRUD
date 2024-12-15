@@ -160,6 +160,26 @@ async def get_payments(payment_status: Optional[str] = None):
 
     return {"payments": payments}
 
+@app.get("/get_payment/{payment_id}")
+async def get_payment(payment_id: str):
+    payment = payments_collection.find_one({"_id": ObjectId(payment_id)})
+    if not payment:
+        raise HTTPException(status_code=404, detail="Payment not found")
+    
+    # Adjust the payment status and calculate total_due
+    due_date = datetime.strptime(payment['payee_due_date'], '%Y-%m-%d').date()
+    today = datetime.utcnow().date()
+    
+    if due_date < today and payment['payee_payment_status'] != 'completed':
+        payment['payee_payment_status'] = 'overdue'
+    elif due_date == today and payment['payee_payment_status'] != 'completed':
+        payment['payee_payment_status'] = 'due_now'
+    
+    payment['total_due'] = (
+        payment['due_amount'] - (payment['due_amount'] * payment['discount_percent'] / 100)
+    ) + (payment['due_amount'] * payment['tax_percent'] / 100)
+    
+    return serialize_payment(payment)
 
 @app.post("/update_payment/{payment_id}")
 async def update_payment(payment_id: str, payment_data: dict):

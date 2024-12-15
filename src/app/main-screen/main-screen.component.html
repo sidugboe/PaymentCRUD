@@ -10,7 +10,7 @@
       <mat-option value="completed">Completed</mat-option>
     </mat-select>
   </mat-form-field>
-  
+
   <table mat-table [dataSource]="payments">
     <ng-container matColumnDef="payee_first_name">
       <th mat-header-cell *matHeaderCellDef> First Name </th>
@@ -36,8 +36,16 @@
       <th mat-header-cell *matHeaderCellDef> Actions </th>
       <td mat-cell *matCellDef="let payment">
         <button mat-button (click)="onDelete(payment._id)">Delete</button>
-        <button mat-button *ngIf="payment.payee_payment_status === 'completed'" (click)="onUploadEvidence(payment._id, fileInput?.files?.[0])">Upload Evidence</button>
+        
+        <!-- Upload Evidence Button -->
+        <button 
+          mat-button 
+          *ngIf="payment.payee_payment_status === 'completed'" 
+          (click)="onUploadEvidence(payment._id, fileInput?.files?.[0])">
+          Upload Evidence
+        </button>
         <input #fileInput type="file" style="display: none;" />
+        
         <!-- Edit Button -->
         <button mat-button [routerLink]="['/edit-payment', payment._id]">Edit</button>
       </td>
@@ -48,6 +56,9 @@
   </table>
 
   <!-- Pagination controls -->
-  <mat-paginator [length]="totalPayments" [pageSize]="pageSize" (page)="onPageChange($event.pageIndex + 1)">
+  <mat-paginator 
+    [length]="totalPayments" 
+    [pageSize]="pageSize" 
+    (page)="onPageChange($event.pageIndex + 1)">
   </mat-paginator>
 </div>

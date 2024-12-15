@@ -18,6 +18,7 @@ export class EditPaymentComponent implements OnInit {
   filteredCurrencies: string[] = [];
   allAddresses: string[] = ['123 Main St', '456 Elm St', '789 Oak St']; // Example addresses
   allCurrencies: string[] = ['USD', 'EUR', 'GBP']; // Example currencies
+  evidenceFile: File | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -30,7 +31,8 @@ export class EditPaymentComponent implements OnInit {
       due_amount: [0, [Validators.required, Validators.min(0)]],
       payee_payment_status: ['', Validators.required],
       payee_address_line_1: ['', Validators.required],
-      currency: ['', Validators.required]
+      currency: ['', Validators.required],
+      evidence_file: [null] // Evidence file is no longer required for all cases
     });
   }
 
@@ -52,6 +54,17 @@ export class EditPaymentComponent implements OnInit {
       map(value => this._filterCurrencies(value))
     ).subscribe(filteredCurrencies => {
       this.filteredCurrencies = filteredCurrencies;
+    });
+
+    // Watch for changes in payment status to show/hide evidence field
+    this.editPaymentForm.get('payee_payment_status')?.valueChanges.subscribe(status => {
+      const evidenceField = this.editPaymentForm.get('evidence_file');
+      if (status === 'completed') {
+        evidenceField?.setValidators(Validators.required); // Make evidence file required for completed payments
+      } else {
+        evidenceField?.clearValidators(); // Remove validators for non-completed payments
+      }
+      evidenceField?.updateValueAndValidity(); // Revalidate field
     });
   }
 
@@ -78,6 +91,13 @@ export class EditPaymentComponent implements OnInit {
     return this.allCurrencies.filter(currency => currency.toLowerCase().includes(filterValue));
   }
 
+  onFileChange(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input?.files?.length) {
+      this.evidenceFile = input.files[0];
+    }
+  }
+
   onSubmit(): void {
     if (this.editPaymentForm.valid) {
       const paymentData = this.editPaymentForm.getRawValue();
@@ -85,21 +105,44 @@ export class EditPaymentComponent implements OnInit {
       // Prevent updating to completed without evidence
       if (
         paymentData.payee_payment_status === 'completed' &&
-        !paymentData.evidence_file_id
+        !this.evidenceFile
       ) {
         alert('Evidence file is required to mark the payment as completed.');
         return;
       }
 
-      this.paymentService.updatePayment(this.paymentId, paymentData).subscribe({
-        next: () => {
-          alert('Payment updated successfully!');
-          this.router.navigate(['/main-screen']);
-        },
-        error: (err) => {
-          alert('Failed to update payment: ' + err.message);
-        }
-      });
+      // Upload evidence if provided
+      if (this.evidenceFile) {
+        this.paymentService.uploadEvidence(this.paymentId, this.evidenceFile).subscribe({
+          next: (response) => {
+            // Update payment data with evidence file information if needed
+            paymentData.evidence_file_id = response.fileId; // Assuming the response returns a file ID
+            this.paymentService.updatePayment(this.paymentId, paymentData).subscribe({
+              next: () => {
+                alert('Payment updated successfully!');
+                this.router.navigate(['/main-screen']);
+              },
+              error: (err) => {
+                alert('Failed to update payment: ' + err.message);
+              }
+            });
+          },
+          error: (err) => {
+            alert('Failed to upload evidence: ' + err.message);
+          }
+        });
+      } else {
+        // Update payment without evidence if not required
+        this.paymentService.updatePayment(this.paymentId, paymentData).subscribe({
+          next: () => {
+            alert('Payment updated successfully!');
+            this.router.navigate(['/main-screen']);
+          },
+          error: (err) => {
+            alert('Failed to update payment: ' + err.message);
+          }
+        });
+      }
     }
   }
 }
