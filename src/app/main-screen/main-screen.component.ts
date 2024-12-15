@@ -10,6 +10,7 @@ import { Payment } from '../payment.model';
 })
 export class MainScreenComponent implements OnInit {
   payments: Payment[] = [];
+  allPayments: Payment[] = [];  // Declare allPayments to store all fetched payments
   currentPage: number = 1;
   pageSize: number = 10;
   totalPayments: number = 0;
@@ -23,11 +24,21 @@ export class MainScreenComponent implements OnInit {
   }
 
   loadPayments(): void {
-    this.paymentService.getPayments(this.paymentStatus, this.currentPage, this.pageSize).subscribe((response: any) => {
-      console.log('API Response:', response); 
-      this.payments = response.payments;
-      this.totalPayments = response.totalCount;  // Assuming backend returns total count for pagination
+    this.paymentService.getPayments(this.paymentStatus).subscribe((response: any) => {
+      console.log('API Response:', response);
+      this.allPayments = response.payments; // Store all payments
+      this.totalPayments = this.allPayments.length; // Total number of payments for pagination
+      this.updatePaginatedPayments(); // Update the current page's data
     });
+  }
+
+  updatePaginatedPayments(): void {
+    // Calculate the start and end index for the current page
+    const startIndex = (this.currentPage - 1) * this.pageSize;
+    const endIndex = startIndex + this.pageSize;
+
+    // Slice the payments for the current page
+    this.payments = this.allPayments.slice(startIndex, endIndex);
   }
 
   // Search functionality
@@ -39,21 +50,10 @@ export class MainScreenComponent implements OnInit {
   // Pagination functionality
   onPageChange(page: number): void {
     this.currentPage = page;
-    this.loadPayments();
+    this.updatePaginatedPayments(); // Update the displayed payments based on the new page
   }
 
   // Handle file upload when payment status is updated to completed
-  // onUploadEvidence(paymentId: string, file: File): void {
-  //   if (!file) {
-  //     alert('Please upload evidence file.');
-  //     return;
-  //   }
-
-  //   this.paymentService.uploadEvidence(paymentId, file).subscribe(response => {
-  //     console.log('Evidence uploaded successfully', response);
-  //   });
-  // }
-
   onUploadEvidence(paymentId: string, file: File | undefined): void {
     if (!file) {
       alert('Please upload evidence file.');

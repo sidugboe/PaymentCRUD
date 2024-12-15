@@ -127,22 +127,16 @@ def get_file(file_id: str) -> BytesIO:
 # Web services
 
 @app.get("/get_payments")
-async def get_payments(
-    payment_status: Optional[str] = None,
-    page: int = 1, 
-    size: int = 10
-):
+async def get_payments(payment_status: Optional[str] = None):
     query = {}
     if payment_status:
         query["payee_payment_status"] = payment_status
 
-    skip = (page - 1) * size
-    payments = list(payments_collection.find(query).skip(skip).limit(size))
-    # print(payments)
+    payments = list(payments_collection.find(query))
+
     # Adjust payment status based on due date
     today = datetime.utcnow().date()
     for payment in payments:
-        # print(payment, type(payment), payment["_id"], type(payment["_id"]))
         due_date = datetime.strptime(payment['payee_due_date'], '%Y-%m-%d').date()
         if due_date < today and payment['payee_payment_status'] != 'completed':
             payment['payee_payment_status'] = 'overdue'
@@ -158,6 +152,7 @@ async def get_payments(
         payments = [serialize_payment(payment) for payment in payments]
 
     return {"payments": payments}
+
 
 @app.post("/update_payment/{payment_id}")
 async def update_payment(payment_id: str, payment_data: dict):

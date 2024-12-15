@@ -33,13 +33,16 @@ export class EditPaymentComponent implements OnInit {
 
   loadPaymentData(): void {
     // Fetch payment details by ID and populate the form
-    this.paymentService.getPayments('', 1, 1).subscribe((response: any) => {
-      const payment = response.payments.find((p: any) => p._id === this.paymentId);
+    this.paymentService.getPaymentById(this.paymentId).subscribe((payment: any) => {
       if (payment) {
         this.editPaymentForm.patchValue(payment);
+      } else {
+        alert('Payment not found');
+        this.router.navigate(['/main-screen']);
       }
     });
-  }
+  }  
+
 
   onSubmit(): void {
     if (this.editPaymentForm.valid) {
