@@ -129,9 +129,12 @@ def get_file(file_id: str) -> BytesIO:
 @app.get("/get_payments")
 async def get_payments(payment_status: Optional[str] = None):
     query = {}
-    if payment_status and payment_status != "all":
-        query["payee_payment_status"] = payment_status
 
+    # Filter payments based on the status if needed
+    # if payment_status and payment_status != "all":
+    #     query["payee_payment_status"] = payment_status
+
+    # Fetch all payments first
     payments = list(payments_collection.find(query))
 
     # Adjust payment status based on due date
@@ -148,8 +151,12 @@ async def get_payments(payment_status: Optional[str] = None):
             payment['due_amount'] - (payment['due_amount'] * payment['discount_percent'] / 100)
         ) + (payment['due_amount'] * payment['tax_percent'] / 100)
 
-        # Serialize ObjectId fields
-        payments = [serialize_payment(payment) for payment in payments]
+    # Filter payments based on the status if needed
+    if payment_status and payment_status != "all":
+        payments = [payment for payment in payments if payment['payee_payment_status'] == payment_status]
+
+    # Serialize ObjectId fields
+    payments = [serialize_payment(payment) for payment in payments]
 
     return {"payments": payments}
 
