@@ -129,7 +129,7 @@ def get_file(file_id: str) -> BytesIO:
 @app.get("/get_payments")
 async def get_payments(payment_status: Optional[str] = None):
     query = {}
-    if payment_status:
+    if payment_status and payment_status != "all":
         query["payee_payment_status"] = payment_status
 
     payments = list(payments_collection.find(query))

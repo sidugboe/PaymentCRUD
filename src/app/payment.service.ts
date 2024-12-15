@@ -12,14 +12,18 @@ export class PaymentService {
   constructor(private http: HttpClient) {}
 
   // Get a list of payments with filtering, pagination, and sorting
-  getPayments(paymentStatus?: string): Observable<any> {
+  getPayments(paymentStatus: string = 'all'): Observable<any> {
     let url = `${this.apiUrl}/get_payments`;
-    // if (paymentStatus) {
-    //   url += `?payment_status=${paymentStatus}`;
-    // }
-    console.log('Constructed URL:', url);
+  
+    // Append the payment_status filter if it's not 'all'
+    if (paymentStatus && paymentStatus !== 'all') {
+      url += `?payment_status=${paymentStatus}`;
+    }
+  
+    console.log('Constructed URL:', url);  // This will log the full URL for debugging
     return this.http.get<any>(url);
   }
+  
   
 
   // Get payment by ID
