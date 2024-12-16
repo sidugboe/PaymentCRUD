@@ -7,7 +7,7 @@ import { Payment } from './payment.model';
   providedIn: 'root'
 })
 export class PaymentService {
-  private apiUrl = 'http://18.191.6.183:8000'; // Replace with your actual FastAPI server URL
+  private apiUrl = 'http://18.191.6.183:8000'; 
 
   constructor(private http: HttpClient) {}
 
